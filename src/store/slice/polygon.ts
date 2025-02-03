@@ -1,16 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LatLngTuple } from "leaflet";
-
-interface Polygon {
-  id: string;
-  coordinates: LatLngTuple[];
-  fillColor: string;
-  borderColor: string;
-}
-
-interface PolygonState {
-  polygons: Polygon[];
-}
+import { Polygon, PolygonState } from "@/types/store";
 
 const initialState: PolygonState = {
   polygons: [],
@@ -19,6 +8,7 @@ const initialState: PolygonState = {
 export const polygonSlice = createSlice({
   name: "polygons",
   initialState,
+
   reducers: {
     addPolygon: (state, action: PayloadAction<Polygon>) => {
       state.polygons.push(action.payload);

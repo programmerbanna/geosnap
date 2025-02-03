@@ -1,0 +1,70 @@
+@import "@/assets/scss/_variables.scss";
+
+.container {
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: 1rem;
+
+  h2 {
+    font-family: $font-family;
+    font-size: $font-size-large;
+    color: $text-color;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.polygonItem {
+  background: white;
+  border-radius: $border-radius;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    font-family: $font-family;
+    font-size: $font-size-medium;
+    color: $text-color;
+  }
+
+  &__colors {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid $primary-color;
+  border-radius: $border-radius;
+  margin-bottom: 1rem;
+  font-size: $font-size-small;
+
+  &:focus {
+    outline: none;
+    border-color: darken($primary-color, 10%);
+  }
+}

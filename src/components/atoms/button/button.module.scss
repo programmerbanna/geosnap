@@ -1,0 +1,59 @@
+@import "@/assets/scss/_variables.scss";
+.button {
+  font-family: $font-family;
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: background-color $transition-duration,
+    transform $transition-duration;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &--primary {
+    background-color: $primary-color;
+    color: white;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+  }
+
+  &--secondary {
+    background-color: $secondary-color;
+    color: white;
+
+    &:hover {
+      background-color: darken($secondary-color, 10%);
+    }
+  }
+
+  &--error {
+    background-color: $error-color;
+    color: white;
+
+    &:hover {
+      background-color: darken($error-color, 10%);
+    }
+  }
+
+  &--small {
+    font-size: $font-size-small;
+    padding: 6px 12px;
+  }
+
+  &--medium {
+    font-size: $font-size-medium;
+    padding: 8px 16px;
+  }
+
+  &--large {
+    font-size: $font-size-large;
+    padding: 10px 20px;
+  }
+}
