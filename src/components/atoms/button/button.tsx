@@ -1,11 +1,10 @@
 import React from 'react';
-import './button.module.scss';
+import styles from './button.module.scss';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'error';
     size?: 'small' | 'medium' | 'large';
 }
-
 
 const Button: React.FC<ButtonProps> = ({
     children,
@@ -16,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
     return (
         <button
-            className={`button button--${variant} button--${size} ${className || ''}`}
+            className={`${styles.button} ${styles[`button--${variant}`]} ${styles[`button--${size}`]} ${className || ''}`}
             {...props}
         >
             {children}
