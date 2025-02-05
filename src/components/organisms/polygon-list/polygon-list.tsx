@@ -19,11 +19,12 @@ const DataControls = dynamic(() => import('@/components/molecules/data-controls'
 
 
 const PolygonList: React.FC = () => {
-
     const dispatch = useDispatch();
     const isOpen = useSelector((state: RootState) => state.sidebar.isOpen);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const hasPolygons = polygons.length > 0;
 
     const calculateArea = (coordinates: LatLngTuple[]) => {
         const poly = turf.polygon([coordinates.map(coord => [coord[1], coord[0]])]);
@@ -76,58 +77,70 @@ const PolygonList: React.FC = () => {
                 {isOpen ? '→' : '←'}
             </button>
             <div className={styles.content}>
-                <div className={styles.header}>
-                    <Heading level="h2" size="xl">
-                        Polygons
-                    </Heading>
-                    <input
-                        type="text"
-                        placeholder="Search polygons..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={styles.searchInput}
-                    />
-                    <DataControls />
-                </div>
-                <div className={styles.list}>
-                    {filteredPolygons.map((polygon) => (
-                        <div key={polygon.id} className={styles.polygonItem}>
-                            <div className={styles.polygonItem__header}>
-                                <Text size="md" weight="medium" className={styles.polygonItem__title}>
-                                    {polygon.label || `Polygon ${polygon.id.slice(0, 8)}`}
-                                </Text>
-                                <Text size="sm" className={styles.polygonItem__area}>
-                                    Area: {calculateArea(polygon.coordinates)}
-                                </Text>
-                            </div>
-                            <div className={styles.polygonItem__colors}>
-                                <div className={styles.colorPickerWrapper}>
-                                    <ColorPicker
-                                        label="Fill Color"
-                                        value={polygon.fillColor}
-                                        onChange={(color) => handleColorChange(polygon.id, 'fillColor', color)}
-                                    />
+                {hasPolygons ? (
+                    <div className={styles.header}>
+                        <Heading level="h2" size="xl">
+                            Polygons
+                        </Heading>
+                        <input
+                            type="text"
+                            placeholder="Search polygons..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={styles.searchInput}
+                        />
+                        <DataControls />
+                        <div className={styles.list}>
+                            {filteredPolygons.map((polygon) => (
+                                <div key={polygon.id} className={styles.polygonItem}>
+                                    <div className={styles.polygonItem__header}>
+                                        <Text size="md" weight="medium" className={styles.polygonItem__title}>
+                                            {polygon.label || `Polygon ${polygon.id.slice(0, 8)}`}
+                                        </Text>
+                                        <Text size="sm" className={styles.polygonItem__area}>
+                                            Area: {calculateArea(polygon.coordinates)}
+                                        </Text>
+                                    </div>
+                                    <div className={styles.polygonItem__colors}>
+                                        <div className={styles.colorPickerWrapper}>
+                                            <ColorPicker
+                                                label="Fill Color"
+                                                value={polygon.fillColor}
+                                                onChange={(color) => handleColorChange(polygon.id, 'fillColor', color)}
+                                            />
+                                        </div>
+                                        <div className={styles.colorPickerWrapper}>
+                                            <ColorPicker
+                                                label="Border Color"
+                                                value={polygon.borderColor}
+                                                onChange={(color) => handleColorChange(polygon.id, 'borderColor', color)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className={styles.polygonItem__actions}>
+                                        <Button
+                                            variant="error"
+                                            size="small"
+                                            onClick={() => handleDelete(polygon.id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className={styles.colorPickerWrapper}>
-                                    <ColorPicker
-                                        label="Border Color"
-                                        value={polygon.borderColor}
-                                        onChange={(color) => handleColorChange(polygon.id, 'borderColor', color)}
-                                    />
-                                </div>
-                            </div>
-                            <div className={styles.polygonItem__actions}>
-                                <Button
-                                    variant="error"
-                                    size="small"
-                                    onClick={() => handleDelete(polygon.id)}
-                                >
-                                    Delete
-                                </Button>
-                            </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ) : (
+                    <div className={styles.emptyState}>
+                        <Heading level="h2" size="xl">
+                            Draw or Import Polygons
+                        </Heading>
+                        <Text size="md" className={styles.emptyStateText}>
+                            Start by drawing a polygon on the map or import existing data using the controls below.
+                        </Text>
+                        <DataControls />
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -195,3 +195,23 @@
   border-radius: v.$border-radius;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+.emptyState {
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+
+  h2 {
+    color: v.$text-color;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.emptyStateText {
+  color: #666;
+  max-width: 280px;
+  margin: 0 auto;
+}

@@ -17,6 +17,9 @@ import DataControls from '@/components/molecules/data-controls';
 import { MarkerIcons } from '@/utils/leaflet-icons';
 import ColorPicker from '@/components/atoms/color-picker';
 import '@/assets/scss/globals.scss';
+import { Polygon as PolygonType } from '@/types/store';
+import { showAlert, clearAlert } from '@/store/slice/alert';
+import MapSearch from '@/components/molecules/map-search';
 
 const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
     const map = useMap();
@@ -26,17 +29,32 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
     const [points, setPoints] = useState<LatLngTuple[]>([]);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
 
+    const isPointInAnyPolygon = (point: LatLngTuple, existingPolygons: PolygonType[]) => {
+        const pt = turf.point([point[1], point[0]]);
+
+        return existingPolygons.some(polygon => {
+            const poly = turf.polygon([polygon.coordinates.map(coord => [coord[1], coord[0]])]);
+            return turf.booleanPointInPolygon(pt, poly);
+        });
+    };
+
     useEffect(() => {
         if (!map || !isDrawing) return;
 
         const handleClick = (e: L.LeafletMouseEvent) => {
-            // Check if click target is part of the drawing controls
             const target = e.originalEvent.target as HTMLElement;
             if (target.closest('.drawingControls')) {
                 return;
             }
 
             const newPoint: LatLngTuple = [e.latlng.lat, e.latlng.lng];
+
+            // Check if the new point is inside any existing polygon
+            if (isPointInAnyPolygon(newPoint, polygons)) {
+                dispatch(showAlert("Cannot place markers inside existing polygons"));
+                return;
+            }
+
             setPoints(prev => [...prev, newPoint]);
         };
 
@@ -55,7 +73,7 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
                 );
 
                 if (!validation.isValid) {
-                    alert(validation.message);
+                    dispatch(showAlert(validation.message));
                     setPoints([]);
                     return;
                 }
@@ -137,7 +155,8 @@ const Map: React.FC = () => {
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
     const [isDrawing, setIsDrawing] = useState(false);
     const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
-    const [alert, setAlert] = useState<string | null>(null);
+    const alertMessage = useSelector((state: RootState) => state.alert.message);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if ("geolocation" in navigator) {
@@ -147,16 +166,14 @@ const Map: React.FC = () => {
                     mapRef.current?.setView([latitude, longitude], MAP_CONSTANTS.DEFAULT_ZOOM);
                 },
                 () => {
-                    showAlert("Location access denied. Using default location.");
+                    dispatch(showAlert("Location access denied. Using default location."));
                     mapRef.current?.setView(MAP_CONSTANTS.DEFAULT_CENTER, MAP_CONSTANTS.DEFAULT_ZOOM);
                 }
-
             );
         } else {
-            showAlert("Geolocation is not supported by your browser. Using default location.");
+            dispatch(showAlert("Geolocation is not supported by your browser. Using default location."));
             mapRef.current?.setView(MAP_CONSTANTS.DEFAULT_CENTER, MAP_CONSTANTS.DEFAULT_ZOOM);
         }
-
     }, []);
 
     const calculateCenter = (coords: LatLngTuple[]): LatLngTuple => {
@@ -173,10 +190,6 @@ const Map: React.FC = () => {
             : `${(area / 1000000).toFixed(2)} km²`;
     };
 
-    const showAlert = (message: string) => {
-        setAlert(message);
-    };
-
     const handleGeolocation = () => {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
@@ -185,16 +198,15 @@ const Map: React.FC = () => {
                     mapRef.current?.setView([latitude, longitude], 13);
                 },
                 () => {
-                    showAlert("Please enable location permissions to use this feature");
+                    dispatch(showAlert("Please enable location permissions to use this feature"));
                     mapRef.current?.setView(MAP_CONSTANTS.DEFAULT_CENTER, MAP_CONSTANTS.DEFAULT_ZOOM);
                 }
             );
         } else {
-            showAlert("Geolocation is not supported by your browser");
+            dispatch(showAlert("Geolocation is not supported by your browser"));
             mapRef.current?.setView(MAP_CONSTANTS.DEFAULT_CENTER, MAP_CONSTANTS.DEFAULT_ZOOM);
         }
     };
-
 
     const handlePolygonsImported = (bounds: LatLngBounds) => {
         if (mapRef.current) {
@@ -214,9 +226,28 @@ const Map: React.FC = () => {
         return Object.keys(MarkerIcons).find(key => MarkerIcons[key as keyof typeof MarkerIcons].options.iconUrl.includes(color));
     };
 
+    const handleZoomIn = () => {
+        if (mapRef.current) {
+            const currentZoom = mapRef.current.getZoom();
+            mapRef.current.setZoom(currentZoom + MAP_CONSTANTS.ZOOM_STEP);
+        }
+    };
+
+    const handleZoomOut = () => {
+        if (mapRef.current) {
+            const currentZoom = mapRef.current.getZoom();
+            mapRef.current.setZoom(currentZoom - MAP_CONSTANTS.ZOOM_STEP);
+        }
+    };
+
     return (
-        <div className={`${styles.mapWrapper} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-            {alert && <Alert message={alert} onClose={() => setAlert(null)} />}
+        <div className={`${styles.mapWrapper} ${isSidebarOpen ? styles.sidebarOpen : ''} ${isDrawing ? styles.drawing : ''}`}>
+            {alertMessage && (
+                <Alert
+                    message={alertMessage}
+                    onClose={() => dispatch(clearAlert())}
+                />
+            )}
             <MapContainer
                 center={MAP_CONSTANTS.DEFAULT_CENTER}
                 zoom={MAP_CONSTANTS.DEFAULT_ZOOM}
@@ -230,6 +261,7 @@ const Map: React.FC = () => {
                     url={MAP_CONSTANTS.TILE_LAYER}
                     attribution={MAP_CONSTANTS.ATTRIBUTION}
                 />
+                <MapSearch />
                 <DrawingControl isDrawing={isDrawing} />
 
                 {polygons.map((polygon) => (
@@ -262,8 +294,8 @@ const Map: React.FC = () => {
             </MapContainer>
 
             <MapControls
-                onZoomIn={() => mapRef.current?.zoomIn()}
-                onZoomOut={() => mapRef.current?.zoomOut()}
+                onZoomIn={handleZoomIn}
+                onZoomOut={handleZoomOut}
                 onCenter={handleGeolocation}
                 onToggleDraw={() => setIsDrawing(!isDrawing)}
                 isDrawing={isDrawing}

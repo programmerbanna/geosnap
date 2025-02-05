@@ -14,9 +14,11 @@
   }
 
   &.drawing {
-    cursor: crosshair;
-
     :global(.leaflet-container) {
+      cursor: crosshair !important;
+    }
+
+    :global(.leaflet-interactive) {
       cursor: crosshair !important;
     }
   }

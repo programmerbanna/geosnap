@@ -8,6 +8,7 @@ export const MAP_CONSTANTS = {
   MIN_ZOOM: 3,
   MAX_ZOOM: 18,
   DEFAULT_ZOOM: 13,
+  ZOOM_STEP: 1.5,
   DEFAULT_CENTER: [51.505, -0.09] as [number, number],
   TILE_LAYER: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   ATTRIBUTION: "© OpenStreetMap contributors",
