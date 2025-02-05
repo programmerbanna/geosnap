@@ -1,0 +1,58 @@
+@import "@/assets/scss/_variables.scss";
+
+.text {
+  font-family: $font-family;
+  margin: 0;
+  color: $text-color;
+
+  // Size variants
+  &--xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  &--sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  &--md {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  &--lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  // Weight variants
+  &--normal {
+    font-weight: 400;
+  }
+
+  &--medium {
+    font-weight: 500;
+  }
+
+  &--semibold {
+    font-weight: 600;
+  }
+
+  &--bold {
+    font-weight: 700;
+  }
+
+  // Alignment variants
+  &--left {
+    text-align: left;
+  }
+
+  &--center {
+    text-align: center;
+  }
+
+  &--right {
+    text-align: right;
+  }
+}

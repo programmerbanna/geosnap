@@ -1,19 +1,38 @@
+@use "sass:color";
 @import "@/assets/scss/_variables.scss";
 
 .container {
   padding: 1rem;
   height: 100%;
   overflow-y: auto;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 
   h2 {
     font-family: $font-family;
     font-size: $font-size-large;
     color: $text-color;
     margin-bottom: 0.5rem;
+  }
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
   }
 }
 
@@ -25,46 +44,40 @@
 
 .polygonItem {
   background: white;
-  border-radius: $border-radius;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e1e1;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 
   &__header {
+    margin-bottom: 1rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   &__title {
-    font-family: $font-family;
-    font-size: $font-size-medium;
-    color: $text-color;
+    font-weight: 500;
+    color: #333;
+  }
+
+  &__area {
+    color: #666;
   }
 
   &__colors {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin: 0.5rem 0;
+    margin-bottom: 1rem;
   }
 
   &__actions {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-}
-
-.searchInput {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid $primary-color;
-  border-radius: $border-radius;
-  margin-bottom: 1rem;
-  font-size: $font-size-small;
-
-  &:focus {
-    outline: none;
-    border-color: darken($primary-color, 10%);
+    justify-content: flex-end;
   }
 }

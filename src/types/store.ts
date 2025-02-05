@@ -5,8 +5,10 @@ export interface Polygon {
   coordinates: LatLngTuple[];
   fillColor: string;
   borderColor: string;
+  label?: string;
 }
 
 export interface PolygonState {
   polygons: Polygon[];
+  activePolygonId: string | null;
 }

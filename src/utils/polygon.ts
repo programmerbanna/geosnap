@@ -1,13 +1,18 @@
 import * as turf from "@turf/turf";
 import { Polygon } from "@/types/store";
+import { LatLngTuple } from "leaflet";
+
+type ValidateInput = Polygon | { coordinates: LatLngTuple[] };
 
 export const validatePolygon = (
-  newPolygon: Polygon,
+  newPolygon: ValidateInput,
   existingPolygons: Polygon[]
 ): { isValid: boolean; message?: string } => {
+  const coordinates = "coordinates" in newPolygon ? newPolygon.coordinates : [];
+
   // Convert coordinates to GeoJSON format
   const newPoly = turf.polygon([
-    newPolygon.coordinates.map((coord) => [coord[1], coord[0]]),
+    coordinates.map((coord) => [coord[1], coord[0]]),
   ]);
 
   // Check for self-intersection

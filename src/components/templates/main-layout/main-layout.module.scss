@@ -1,3 +1,4 @@
+@use "sass:color";
 @import "@/assets/scss/_variables.scss";
 
 .layout {
@@ -15,11 +16,16 @@
 }
 
 .sidebar {
-  width: 320px;
-  background: white;
-  border-left: 1px solid darken($background-color, 10%);
-  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  background-color: $background-color;
+  border-left: 1px solid color.adjust($background-color, $lightness: -10%);
   overflow-y: auto;
+}
+
+.content {
+  flex: 1;
+  position: relative;
+  border-top: 1px solid color.adjust($background-color, $lightness: -10%);
 }
 
 @media (max-width: 768px) {

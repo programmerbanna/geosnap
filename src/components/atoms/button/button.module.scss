@@ -1,11 +1,13 @@
-@import "@/assets/scss/_variables.scss";
+@use "sass:color";
+@use "@/assets/scss/_variables.scss" as v;
+
 .button {
-  font-family: $font-family;
+  font-family: v.$font-family;
   border: none;
-  border-radius: $border-radius;
+  border-radius: v.$border-radius;
   cursor: pointer;
-  transition: background-color $transition-duration,
-    transform $transition-duration;
+  transition: background-color v.$transition-duration,
+    transform v.$transition-duration;
 
   &:hover {
     transform: translateY(-2px);
@@ -16,44 +18,44 @@
   }
 
   &--primary {
-    background-color: $primary-color;
+    background-color: v.$primary-color;
     color: white;
 
     &:hover {
-      background-color: darken($primary-color, 10%);
+      background-color: color.adjust(v.$primary-color, $lightness: -10%);
     }
   }
 
   &--secondary {
-    background-color: $secondary-color;
+    background-color: v.$secondary-color;
     color: white;
 
     &:hover {
-      background-color: darken($secondary-color, 10%);
+      background-color: color.adjust(v.$secondary-color, $lightness: -10%);
     }
   }
 
   &--error {
-    background-color: $error-color;
+    background-color: v.$error-color;
     color: white;
 
     &:hover {
-      background-color: darken($error-color, 10%);
+      background-color: color.adjust(v.$error-color, $lightness: -10%);
     }
   }
 
   &--small {
-    font-size: $font-size-small;
+    font-size: v.$font-size-small;
     padding: 6px 12px;
   }
 
   &--medium {
-    font-size: $font-size-medium;
+    font-size: v.$font-size-medium;
     padding: 8px 16px;
   }
 
   &--large {
-    font-size: $font-size-large;
+    font-size: v.$font-size-large;
     padding: 10px 20px;
   }
 }

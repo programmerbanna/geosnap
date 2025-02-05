@@ -3,6 +3,7 @@ import { Polygon, PolygonState } from "@/types/store";
 
 const initialState: PolygonState = {
   polygons: [],
+  activePolygonId: null,
 };
 
 export const polygonSlice = createSlice({
