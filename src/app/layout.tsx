@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "GeoSnap - Interactive Polygon Drawing Tool",
     description: "Create, edit, and manage polygons on an interactive map",
-    url: "https://geosnap.vercel.app",
+    url: "https://geosnap-two.vercel.app",
     siteName: "GeoSnap",
     locale: "en_US",
     type: "website",

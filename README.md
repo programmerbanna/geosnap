@@ -249,7 +249,7 @@ Please note that this project is released with a Contributor Code of Conduct. By
 
 MIT License
 
-Copyright (c) 2024 Hasanul Haque Banna
+Copyright (c) 2025 Hasanul Haque Banna
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
