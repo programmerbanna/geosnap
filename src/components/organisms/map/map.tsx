@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Polygon, Marker, Popup, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, Tooltip } from 'react-leaflet';
 import L, { LatLngTuple, LatLngBounds } from 'leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import * as turf from '@turf/turf';
@@ -146,7 +146,7 @@ const Map: React.FC = () => {
                 zoom={MAP_CONSTANTS.DEFAULT_ZOOM}
                 minZoom={MAP_CONSTANTS.MIN_ZOOM}
                 maxZoom={MAP_CONSTANTS.MAX_ZOOM}
-                className={styles.map}
+                className={`${styles.map} ${isDrawing ? 'drawing' : ''}`}
                 ref={mapRef}
                 zoomControl={false}
             >

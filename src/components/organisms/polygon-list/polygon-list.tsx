@@ -1,22 +1,19 @@
 "use client";
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { updatePolygon, deletePolygon } from '@/store/slice/polygon';
 import Button from '@/components/atoms/button';
 import ColorPicker from '@/components/atoms/color-picker';
 import * as turf from '@turf/turf';
-
 import styles from './polygon-list.module.scss';
 import { LatLngTuple } from 'leaflet';
 import Text from '@/components/atoms/text';
 import Heading from '@/components/atoms/heading';
-
 import dynamic from 'next/dynamic';
 import { toggleSidebar } from '@/store/slice/sidebar';
 
 const DataControls = dynamic(() => import('@/components/molecules/data-controls'), { ssr: false });
-
 
 const PolygonList: React.FC = () => {
     const dispatch = useDispatch();
