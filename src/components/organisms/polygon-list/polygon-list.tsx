@@ -9,7 +9,6 @@ import * as turf from '@turf/turf';
 
 import styles from './polygon-list.module.scss';
 import { LatLngTuple } from 'leaflet';
-// import DataControls from '@/components/molecules/data-controls';
 import Text from '@/components/atoms/text';
 import Heading from '@/components/atoms/heading';
 
@@ -101,16 +100,20 @@ const PolygonList: React.FC = () => {
                             </Text>
                         </div>
                         <div className={styles.polygonItem__colors}>
-                            <ColorPicker
-                                label="Fill Color"
-                                value={polygon.fillColor}
-                                onChange={(color) => handleColorChange(polygon.id, 'fillColor', color)}
-                            />
-                            <ColorPicker
-                                label="Border Color"
-                                value={polygon.borderColor}
-                                onChange={(color) => handleColorChange(polygon.id, 'borderColor', color)}
-                            />
+                            <div className={styles.colorPickerWrapper}>
+                                <ColorPicker
+                                    label="Fill Color"
+                                    value={polygon.fillColor}
+                                    onChange={(color) => handleColorChange(polygon.id, 'fillColor', color)}
+                                />
+                            </div>
+                            <div className={styles.colorPickerWrapper}>
+                                <ColorPicker
+                                    label="Border Color"
+                                    value={polygon.borderColor}
+                                    onChange={(color) => handleColorChange(polygon.id, 'borderColor', color)}
+                                />
+                            </div>
                         </div>
                         <div className={styles.polygonItem__actions}>
                             <Button

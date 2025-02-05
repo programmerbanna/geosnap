@@ -26,18 +26,27 @@ const DataControls: React.FC<DataControlsProps> = ({ onPolygonsImported }) => {
         setMounted(true);
     }, []);
 
-
     const handleExport = () => {
-        const dataStr = JSON.stringify(polygons, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'polygons.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        if (!polygons || polygons.length === 0) {
+            setAlert("No polygons to export");
+            return;
+        }
+
+        try {
+            const dataStr = JSON.stringify(polygons, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'polygons.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Export error:', error);
+            setAlert("Error exporting polygons");
+        }
     };
 
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {

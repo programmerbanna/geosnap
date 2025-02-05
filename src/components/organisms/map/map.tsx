@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Polygon, Marker, useMap, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, useMap, Popup, Tooltip as ReactLeafletTooltip } from 'react-leaflet';
 import L, { LatLngTuple, LatLngBounds } from 'leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import * as turf from '@turf/turf';
@@ -30,14 +30,27 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
         if (!map || !isDrawing) return;
 
         const handleClick = (e: L.LeafletMouseEvent) => {
+            // Check if click target is part of the drawing controls
+            const target = e.originalEvent.target as HTMLElement;
+            if (target.closest('.drawingControls')) {
+                return;
+            }
+
             const newPoint: LatLngTuple = [e.latlng.lat, e.latlng.lng];
             setPoints(prev => [...prev, newPoint]);
         };
 
         const handleDoubleClick = () => {
             if (points.length >= POLYGON_CONSTANTS.MIN_POINTS) {
+                // Close the polygon by adding the first point as the last point
+                const closedPoints = [...points];
+                if (points[0][0] !== points[points.length - 1][0] ||
+                    points[0][1] !== points[points.length - 1][1]) {
+                    closedPoints.push(points[0]);
+                }
+
                 const validation = validatePolygon(
-                    { coordinates: points },
+                    { coordinates: closedPoints },
                     polygons
                 );
 
@@ -49,11 +62,12 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
 
                 const newPolygon = {
                     id: `polygon-${Date.now()}`,
-                    coordinates: points,
+                    coordinates: closedPoints,
                     fillColor: fillColor,
                     borderColor: borderColor
                 };
 
+                console.log('Adding polygon:', newPolygon);
                 dispatch(addPolygon(newPolygon));
                 setPoints([]);
             }
@@ -72,7 +86,7 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
     return (
         <>
             {isDrawing && points.length > 0 && (
-                <div className={styles.drawingControls}>
+                <div className={`${styles.drawingControls} drawingControls`}>
                     <ColorPicker
                         label="Fill Color"
                         value={fillColor}
@@ -231,8 +245,15 @@ const Map: React.FC = () => {
                             position={calculateCenter(polygon.coordinates)}
                             icon={MarkerIcons[getColorName(polygon.fillColor) as keyof typeof MarkerIcons] || MarkerIcons.blue}
                         >
-                            <Popup>
+                            <ReactLeafletTooltip permanent={false} sticky>
                                 Area: {calculateArea(polygon.coordinates)}
+                            </ReactLeafletTooltip>
+                            <Popup>
+                                <div>
+                                    <strong>Polygon Details</strong>
+                                    <p>Area: {calculateArea(polygon.coordinates)}</p>
+                                    <p>Center: {calculateCenter(polygon.coordinates).map(coord => Number(coord).toFixed(4)).join(', ')}</p>
+                                </div>
                             </Popup>
                         </Marker>
                     </React.Fragment>
