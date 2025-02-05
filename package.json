@@ -2,6 +2,8 @@
   "name": "geosnap",
   "version": "0.1.0",
   "private": true,
+  "author": "Hasanul Haque Banna",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
