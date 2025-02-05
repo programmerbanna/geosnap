@@ -1,3 +1,4 @@
+"use client";
 import * as turf from "@turf/turf";
 import { Polygon } from "@/types/store";
 import { LatLngTuple } from "leaflet";

@@ -1,9 +1,10 @@
-@import "@/assets/scss/_variables.scss";
+@use "sass:color";
+@use "@/assets/scss/_variables.scss" as v;
 
 .text {
-  font-family: $font-family;
+  font-family: v.$font-family;
   margin: 0;
-  color: $text-color;
+  color: v.$text-color;
 
   // Size variants
   &--xs {

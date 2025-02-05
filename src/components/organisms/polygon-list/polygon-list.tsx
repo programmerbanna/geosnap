@@ -1,21 +1,34 @@
-import React, { useState, useMemo } from 'react';
+"use client";
+import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { updatePolygon, deletePolygon } from '@/store/slice/polygon';
 import Button from '@/components/atoms/button';
 import ColorPicker from '@/components/atoms/color-picker';
 import * as turf from '@turf/turf';
+
 import styles from './polygon-list.module.scss';
 import { LatLngTuple } from 'leaflet';
-import DataControls from '@/components/molecules/data-controls';
+// import DataControls from '@/components/molecules/data-controls';
 import Text from '@/components/atoms/text';
 import Heading from '@/components/atoms/heading';
 
+import dynamic from 'next/dynamic';
+
+const DataControls = dynamic(() => import('@/components/molecules/data-controls'), { ssr: false });
+
 
 const PolygonList: React.FC = () => {
+
     const dispatch = useDispatch();
+    const [mounted, setMounted] = useState(false);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
 
     const calculateArea = (coordinates: LatLngTuple[]) => {
         const poly = turf.polygon([coordinates.map(coord => [coord[1], coord[0]])]);
@@ -58,15 +71,7 @@ const PolygonList: React.FC = () => {
         dispatch(deletePolygon(id));
     };
 
-    const handleLabelChange = (id: string, label: string) => {
-        const polygon = polygons.find(p => p.id === id);
-        if (polygon) {
-            dispatch(updatePolygon({
-                ...polygon,
-                label
-            }));
-        }
-    };
+    if (!mounted) return null;
 
     return (
         <div className={styles.container}>

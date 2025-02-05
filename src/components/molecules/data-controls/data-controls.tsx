@@ -1,15 +1,15 @@
-import React, { useRef, useState } from 'react';
+"use client";
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import Button from '@/components/atoms/button';
 import styles from './data-controls.module.scss';
 import { addPolygon } from '@/store/slice/polygon';
 import { validatePolygon } from '@/utils/polygon-validation';
+
 import Alert from '@/components/atoms/alert';
-import * as turf from '@turf/turf';
-import { LatLngBounds } from 'leaflet';
+import L, { LatLngBounds, LatLngTuple } from 'leaflet';
 import { Polygon } from '@/types/store';
-import L from 'leaflet';
 
 interface DataControlsProps {
     onPolygonsImported?: (bounds: LatLngBounds) => void;
@@ -17,9 +17,15 @@ interface DataControlsProps {
 
 const DataControls: React.FC<DataControlsProps> = ({ onPolygonsImported }) => {
     const dispatch = useDispatch();
+    const [mounted, setMounted] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
     const [alert, setAlert] = useState<string | null>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
 
     const handleExport = () => {
         const dataStr = JSON.stringify(polygons, null, 2);
@@ -44,7 +50,7 @@ const DataControls: React.FC<DataControlsProps> = ({ onPolygonsImported }) => {
                     const validPolygons: Polygon[] = [];
                     const allPoints: [number, number][] = [];
 
-                    importedPolygons.forEach((polygon: any, index: number) => {
+                    importedPolygons.forEach((polygon: Omit<Polygon, 'id'>, index: number) => {
                         const validation = validatePolygon(polygon, polygons);
                         if (validation.isValid) {
                             const newPolygon: Polygon = {
@@ -54,7 +60,7 @@ const DataControls: React.FC<DataControlsProps> = ({ onPolygonsImported }) => {
                             validPolygons.push(newPolygon);
 
                             // Collect all points for bounds calculation
-                            polygon.coordinates.forEach((coord: [number, number]) => {
+                            polygon.coordinates.forEach((coord: LatLngTuple) => {
                                 allPoints.push([coord[0], coord[1]]);
                             });
                         } else {
@@ -68,13 +74,16 @@ const DataControls: React.FC<DataControlsProps> = ({ onPolygonsImported }) => {
                         const bounds = L.latLngBounds(allPoints);
                         onPolygonsImported?.(bounds);
                     }
-                } catch (error) {
-                    setAlert('Error importing polygons. Please check file format.');
+                } catch (error: unknown) {
+                    const errorMessage = error instanceof Error ? error.message : 'Error importing polygons';
+                    setAlert(errorMessage);
                 }
             };
             reader.readAsText(file);
         }
     };
+
+    if (!mounted) return null;
 
     return (
         <>

@@ -1,5 +1,6 @@
+"use client";
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, FeatureGroup, Polygon, Marker, useMap, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, useMap, Popup } from 'react-leaflet';
 import L, { LatLngTuple, LatLngBounds } from 'leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import * as turf from '@turf/turf';
@@ -11,12 +12,17 @@ import Tooltip from '@/components/atoms/tooltip';
 import { MAP_CONSTANTS, POLYGON_CONSTANTS } from '@/config';
 import { validatePolygon } from '@/utils/polygon-validation';
 import Alert from '@/components/atoms/alert';
-import '@/utils/leaflet-icons';
+// import '@/utils/leaflet-icons';
 import DataControls from '@/components/molecules/data-controls';
+import { MarkerIcons } from '@/utils/leaflet-icons';
+import ColorPicker from '@/components/atoms/color-picker';
+import '@/assets/scss/globals.scss';
 
 const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
     const map = useMap();
     const dispatch = useDispatch();
+    const [fillColor, setFillColor] = useState('#3498db');
+    const [borderColor, setBorderColor] = useState('#2980b9');
     const [points, setPoints] = useState<LatLngTuple[]>([]);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
 
@@ -42,10 +48,10 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
                 }
 
                 const newPolygon = {
-                    id: Date.now().toString(),
+                    id: `polygon-${Date.now()}`,
                     coordinates: points,
-                    fillColor: POLYGON_CONSTANTS.DEFAULT_FILL_COLOR,
-                    borderColor: POLYGON_CONSTANTS.DEFAULT_BORDER_COLOR
+                    fillColor: fillColor,
+                    borderColor: borderColor
                 };
 
                 dispatch(addPolygon(newPolygon));
@@ -60,19 +66,56 @@ const DrawingControl: React.FC<{ isDrawing: boolean }> = ({ isDrawing }) => {
             map.off('click', handleClick);
             map.off('dblclick', handleDoubleClick);
         };
-    }, [map, isDrawing, points, dispatch, polygons]);
+    }, [map, isDrawing, points, dispatch, polygons, fillColor, borderColor]);
 
     // Render temporary polygon while drawing
-    return points.length > 0 ? (
-        <Polygon
-            positions={points}
-            pathOptions={{
-                color: '#3498db',
-                fillColor: '#3498db',
-                fillOpacity: 0.3
-            }}
-        />
-    ) : null;
+    return (
+        <>
+            {isDrawing && points.length > 0 && (
+                <div className={styles.drawingControls}>
+                    <ColorPicker
+                        label="Fill Color"
+                        value={fillColor}
+                        onChange={setFillColor}
+                    />
+                    <ColorPicker
+                        label="Border Color"
+                        value={borderColor}
+                        onChange={setBorderColor}
+                    />
+                </div>
+            )}
+            {points.length > 0 && (
+                <Polygon
+                    positions={points}
+                    pathOptions={{
+                        color: borderColor,
+                        fillColor: fillColor,
+                        fillOpacity: 0.5
+                    }}
+                >
+                    <Tooltip
+                        content={
+                            <div>
+                                Points: {points.length}
+                                {points.length >= POLYGON_CONSTANTS.MIN_POINTS && (
+                                    <div>Double click to complete</div>
+                                )}
+                            </div>
+                        }
+                        position="center"
+                    />
+                </Polygon>
+            )}
+            {points.map((point, index) => (
+                <Marker key={index} position={point}>
+                    <Tooltip content={`Point ${index + 1}`} position="top">
+                        Point {index + 1}
+                    </Tooltip>
+                </Marker>
+            ))}
+        </>
+    );
 };
 
 const Map: React.FC = () => {
@@ -151,6 +194,11 @@ const Map: React.FC = () => {
         }
     };
 
+    const getColorName = (hex: string) => {
+        const color = hex.replace('#', '');
+        return Object.keys(MarkerIcons).find(key => MarkerIcons[key as keyof typeof MarkerIcons].options.iconUrl.includes(color));
+    };
+
     return (
         <div className={`${styles.mapWrapper} ${isDrawing ? styles.drawing : ''}`}>
             {alert && <Alert message={alert} onClose={() => setAlert(null)} />}
@@ -181,7 +229,7 @@ const Map: React.FC = () => {
                         />
                         <Marker
                             position={calculateCenter(polygon.coordinates)}
-                            title={`Area: ${calculateArea(polygon.coordinates)}`}
+                            icon={MarkerIcons[getColorName(polygon.fillColor) as keyof typeof MarkerIcons] || MarkerIcons.blue}
                         >
                             <Popup>
                                 Area: {calculateArea(polygon.coordinates)}

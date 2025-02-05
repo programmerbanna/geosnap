@@ -1,11 +1,11 @@
 @use "sass:color";
-@import "@/assets/scss/_variables.scss";
+@use "@/assets/scss/_variables.scss" as v;
 
 .layout {
   display: grid;
   grid-template-columns: 1fr auto;
   min-height: 100vh;
-  background-color: $background-color;
+  background-color: v.$background-color;
 }
 
 .main {
@@ -17,15 +17,15 @@
 
 .sidebar {
   width: 400px;
-  background-color: $background-color;
-  border-left: 1px solid color.adjust($background-color, $lightness: -10%);
+  background-color: v.$background-color;
+  border-left: 1px solid color.adjust(v.$background-color, $lightness: -10%);
   overflow-y: auto;
 }
 
 .content {
   flex: 1;
   position: relative;
-  border-top: 1px solid color.adjust($background-color, $lightness: -10%);
+  border-top: 1px solid color.adjust(v.$background-color, $lightness: -10%);
 }
 
 @media (max-width: 768px) {
@@ -38,6 +38,6 @@
     width: 100%;
     height: 300px;
     border-left: none;
-    border-top: 1px solid darken($background-color, 10%);
+    border-top: 1px solid color.adjust(v.$background-color, $lightness: -10%);
   }
 }

@@ -1,5 +1,5 @@
 @use "sass:color";
-@import "@/assets/scss/_variables.scss";
+@use "@/assets/scss/_variables.scss" as v;
 
 .container {
   padding: 1rem;
@@ -16,9 +16,9 @@
   gap: 1rem;
 
   h2 {
-    font-family: $font-family;
-    font-size: $font-size-large;
-    color: $text-color;
+    font-family: v.$font-family;
+    font-size: v.$font-size-large;
+    color: v.$text-color;
     margin-bottom: 0.5rem;
   }
 }
@@ -26,13 +26,13 @@
 .searchInput {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e1e1e1;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border: 1px solid v.$border-color;
+  border-radius: v.$border-radius;
+  font-size: v.$font-size-small;
 
   &:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: v.$primary-color;
   }
 }
 
@@ -44,8 +44,8 @@
 
 .polygonItem {
   background: white;
-  border: 1px solid #e1e1e1;
-  border-radius: 0.5rem;
+  border: 1px solid v.$border-color;
+  border-radius: v.$border-radius;
   padding: 1.25rem;
   transition: all 0.2s ease;
 
@@ -62,11 +62,11 @@
 
   &__title {
     font-weight: 500;
-    color: #333;
+    color: v.$text-color;
   }
 
   &__area {
-    color: #666;
+    color: color.adjust(v.$text-color, $lightness: 20%);
   }
 
   &__colors {

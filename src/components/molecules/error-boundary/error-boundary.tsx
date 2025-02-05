@@ -1,3 +1,4 @@
+"use client";
 import React, { Component, ErrorInfo } from 'react';
 import styles from './error-boundary.module.scss';
 import Heading from '@/components/atoms/heading';

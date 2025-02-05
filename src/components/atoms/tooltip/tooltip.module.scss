@@ -1,24 +1,40 @@
-@import "@/assets/scss/_variables.scss";
-
-.tooltipWrapper {
-  position: relative;
-  display: inline-block;
-}
+@use "sass:color";
+@use "@/assets/scss/_variables.scss" as v;
 
 .tooltip {
-  position: absolute;
-  background: white;
-  padding: 8px 12px;
-  border-radius: $border-radius;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: $font-size-small;
-  white-space: nowrap;
-  z-index: 1000;
+  position: relative;
+  display: inline-block;
 
-  &--top {
+  &__content {
+    position: absolute;
+    z-index: 1000;
+    background-color: v.$text-color;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: v.$border-radius;
+    font-family: v.$font-family;
+    font-size: v.$font-size-small;
+    white-space: nowrap;
+
+    &::before {
+      content: "";
+      position: absolute;
+      border: 5px solid transparent;
+    }
+  }
+
+  &__content--top {
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(-8px);
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+
+    &::before {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: v.$text-color;
+    }
   }
 
   &--bottom {
@@ -37,5 +53,11 @@
     left: 100%;
     top: 50%;
     transform: translateY(-50%) translateX(8px);
+  }
+
+  &--center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }

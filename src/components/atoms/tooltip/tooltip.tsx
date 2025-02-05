@@ -3,8 +3,8 @@ import styles from './tooltip.module.scss';
 
 interface TooltipProps {
     content: React.ReactNode;
-    children: React.ReactNode;
-    position?: 'top' | 'bottom' | 'left' | 'right';
+    children?: React.ReactNode;
+    position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ content, children, position = 'top' }) => {
