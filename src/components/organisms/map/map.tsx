@@ -136,6 +136,7 @@ const Map: React.FC = () => {
     const mapRef = useRef<L.Map | null>(null);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
     const [isDrawing, setIsDrawing] = useState(false);
+    const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
     const [alert, setAlert] = useState<string | null>(null);
 
     useEffect(() => {
@@ -214,7 +215,7 @@ const Map: React.FC = () => {
     };
 
     return (
-        <div className={`${styles.mapWrapper} ${isDrawing ? styles.drawing : ''}`}>
+        <div className={`${styles.mapWrapper} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
             {alert && <Alert message={alert} onClose={() => setAlert(null)} />}
             <MapContainer
                 center={MAP_CONSTANTS.DEFAULT_CENTER}

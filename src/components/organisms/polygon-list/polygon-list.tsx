@@ -13,6 +13,7 @@ import Text from '@/components/atoms/text';
 import Heading from '@/components/atoms/heading';
 
 import dynamic from 'next/dynamic';
+import { toggleSidebar } from '@/store/slice/sidebar';
 
 const DataControls = dynamic(() => import('@/components/molecules/data-controls'), { ssr: false });
 
@@ -20,14 +21,9 @@ const DataControls = dynamic(() => import('@/components/molecules/data-controls'
 const PolygonList: React.FC = () => {
 
     const dispatch = useDispatch();
-    const [mounted, setMounted] = useState(false);
+    const isOpen = useSelector((state: RootState) => state.sidebar.isOpen);
     const polygons = useSelector((state: RootState) => state.polygons.polygons);
     const [searchTerm, setSearchTerm] = useState('');
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
 
     const calculateArea = (coordinates: LatLngTuple[]) => {
         const poly = turf.polygon([coordinates.map(coord => [coord[1], coord[0]])]);
@@ -70,62 +66,68 @@ const PolygonList: React.FC = () => {
         dispatch(deletePolygon(id));
     };
 
-    if (!mounted) return null;
-
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <Heading level="h2" size="xl">
-                    Polygons
-                </Heading>
-                <input
-                    type="text"
-                    placeholder="Search polygons..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={styles.searchInput}
-
-                />
-                <DataControls />
-            </div>
-            <div className={styles.list}>
-                {filteredPolygons.map((polygon) => (
-                    <div key={polygon.id} className={styles.polygonItem}>
-                        <div className={styles.polygonItem__header}>
-                            <Text size="md" weight="medium" className={styles.polygonItem__title}>
-                                {polygon.label || `Polygon ${polygon.id.slice(0, 8)}`}
-                            </Text>
-                            <Text size="sm" className={styles.polygonItem__area}>
-                                Area: {calculateArea(polygon.coordinates)}
-                            </Text>
-                        </div>
-                        <div className={styles.polygonItem__colors}>
-                            <div className={styles.colorPickerWrapper}>
-                                <ColorPicker
-                                    label="Fill Color"
-                                    value={polygon.fillColor}
-                                    onChange={(color) => handleColorChange(polygon.id, 'fillColor', color)}
-                                />
+        <div className={`${styles.container} ${!isOpen ? styles.collapsed : ''}`}>
+            <button
+                className={styles.toggleButton}
+                onClick={() => dispatch(toggleSidebar())}
+                aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
+            >
+                {isOpen ? '→' : '←'}
+            </button>
+            <div className={styles.content}>
+                <div className={styles.header}>
+                    <Heading level="h2" size="xl">
+                        Polygons
+                    </Heading>
+                    <input
+                        type="text"
+                        placeholder="Search polygons..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className={styles.searchInput}
+                    />
+                    <DataControls />
+                </div>
+                <div className={styles.list}>
+                    {filteredPolygons.map((polygon) => (
+                        <div key={polygon.id} className={styles.polygonItem}>
+                            <div className={styles.polygonItem__header}>
+                                <Text size="md" weight="medium" className={styles.polygonItem__title}>
+                                    {polygon.label || `Polygon ${polygon.id.slice(0, 8)}`}
+                                </Text>
+                                <Text size="sm" className={styles.polygonItem__area}>
+                                    Area: {calculateArea(polygon.coordinates)}
+                                </Text>
                             </div>
-                            <div className={styles.colorPickerWrapper}>
-                                <ColorPicker
-                                    label="Border Color"
-                                    value={polygon.borderColor}
-                                    onChange={(color) => handleColorChange(polygon.id, 'borderColor', color)}
-                                />
+                            <div className={styles.polygonItem__colors}>
+                                <div className={styles.colorPickerWrapper}>
+                                    <ColorPicker
+                                        label="Fill Color"
+                                        value={polygon.fillColor}
+                                        onChange={(color) => handleColorChange(polygon.id, 'fillColor', color)}
+                                    />
+                                </div>
+                                <div className={styles.colorPickerWrapper}>
+                                    <ColorPicker
+                                        label="Border Color"
+                                        value={polygon.borderColor}
+                                        onChange={(color) => handleColorChange(polygon.id, 'borderColor', color)}
+                                    />
+                                </div>
+                            </div>
+                            <div className={styles.polygonItem__actions}>
+                                <Button
+                                    variant="error"
+                                    size="small"
+                                    onClick={() => handleDelete(polygon.id)}
+                                >
+                                    Delete
+                                </Button>
                             </div>
                         </div>
-                        <div className={styles.polygonItem__actions}>
-                            <Button
-                                variant="error"
-                                size="small"
-                                onClick={() => handleDelete(polygon.id)}
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );
